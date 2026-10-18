@@ -125,9 +125,11 @@ y la peticion fallaria. El aislamiento falla cerrado, nunca abierto.
 php artisan clinica:verificar-aislamiento
 ```
 
-Comprueba, sin pasar por la aplicación, que las 13 tablas tienen RLS forzado,
-que la política existe, que una clinica no ve filas de otra y que una consulta
-sin contexto falla. Escribe filas temporales y las borra al final.
+Comprueba, sin pasar por la aplicación, que el rol conectado no sea
+superusuario ni tenga `BYPASSRLS` (primero, antes de escribir nada), que las 13
+tablas tienen RLS forzado, que la política existe, que una clínica no ve filas de
+otra y que una consulta sin contexto falla. Escribe filas temporales y las borra
+al final.
 
 En las pruebas, `tests/Feature/Aislamiento/` hace lo mismo de forma automatizada.
 
@@ -317,18 +319,28 @@ El prefijo del comando es `clinica:`, no `clinica-salud:`. La opción `--clinica
 recibe la correlación de una clínica existente para usar en la prueba; si no se
 indica, el comando crea una clínica temporal.
 
-**Una diferencia que hay que conocer:** este comando **no** consulta `pg_roles`
-para revisar los atributos del rol. Lo que hace es comprobar que las tablas
-protegidas tengan RLS activada y forzada, hacer una **lectura cruzada** (la
-clínica A no debe ver un paciente de la clínica B) y comprobar que una consulta
-sin contexto falla cerrada.
+**Lo que faltaba y se corrigió:** este comando **no consultaba `pg_roles`**.
+Lo que hacía era comprobar que las tablas protegidas tengan RLS activada y
+forzada, hacer una **lectura cruzada** (la clínica A no debe ver un paciente de
+la clínica B) y comprobar que una consulta sin contexto falla cerrada.
 
-Esa lectura cruzada detecta un rol equivocado de forma indirecta: si la conexión
-fuera superusuario, la clínica A vería al paciente de la B y el comando fallaría.
-A diferencia de otros comandos de Hefesto, aquí la detección no depende de que
-la base tenga datos, porque el propio comando crea las dos clínicas
-temporarias. Aun así, la comprobación directa de `pg_roles` no está automatizada
-y conviene hacerla a mano.
+Esa lectura cruzada detectaba un rol equivocado de forma indirecta: si la
+conexión fuera superusuario, la clínica A vería al paciente de la B y el
+comando fallaría. Es cierto que, a diferencia de otros comandos de Hefesto,
+aquí la detección no depende de que la base tenga datos, porque el propio
+comando crea las dos clínicas temporales. Aun así, la comprobación directa de
+`pg_roles` **no estaba automatizada** y había que hacerla a mano.
+
+**Ahora el comando consulta `pg_roles`**, directo por el nombre del rol, y es la
+**primera** comprobación: antes de revisar las tablas y, sobre todo, antes de
+escribir las filas temporales. Escribirlas con un rol que salta RLS sería
+escribir en una base sin aislamiento. Falla si `rolsuper` o `rolbypassrls`
+están activos, y el mensaje explica qué se detectó, por qué eso anula el
+aislamiento, qué hacer (`POSTGRES_USER` debe ser el rol de arranque
+`clinica_salud_admin`, que la aplicación nunca usa, y el rol de la aplicación se
+crea `NOSUPERUSER NOBYPASSRLS` en `deploy/postgres/inicializar-rol.sh`) y dónde
+está el patrón de referencia
+(`apps/almacen/deploy/postgres/inicializar-rol.sh`).
 
 **Este comando no se ha ejecutado.** En el equipo donde se escribió este cambio
 no había PostgreSQL ni Docker. El diseño es correcto y está sostenido en la
