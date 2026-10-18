@@ -1,0 +1,221 @@
+/**
+ * Hoja de estilos unica.
+ *
+ * Sin framework de estilos: son pocas pantallas y el gasto de una libreria
+ * de CSS seria mayor que el de las reglas de aqui. Los colores son sobrios a
+ * proposito, para que la diferencia entre lo que se puede y no se puede ver
+ * en pantalla no dependa del color.
+ */
+:root {
+    --verde: #2f6f4e;
+    --verde-oscuro: #235c40;
+    --papel: #fbfaf7;
+    --texto: #1d1d1b;
+    --borde: #d8d4cb;
+    --alerta: #b91c1c;
+    --aviso: #92400e;
+    --neutro: #6b6560;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: var(--papel);
+    color: var(--texto);
+    font-family: -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+.aplicacion {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.cabecera {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding: 12px 24px;
+    background: var(--verde);
+    color: #fff;
+}
+
+.cabecera__marca {
+    display: flex;
+    flex-direction: column;
+}
+
+.cabecera__nombre {
+    color: #fff;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.cabecera__subtitulo {
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+.cabecera__menu {
+    display: flex;
+    gap: 16px;
+    flex: 1;
+}
+
+.cabecera__menu a {
+    color: #e7f0ea;
+    text-decoration: none;
+    padding: 4px 2px;
+    border-bottom: 2px solid transparent;
+}
+
+.cabecera__menu a.activo {
+    border-bottom-color: #fff;
+    color: #fff;
+}
+
+.cabecera__persona {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+}
+
+.cabecera__rol {
+    background: rgba(255, 255, 255, 0.18);
+    border-radius: 10px;
+    padding: 2px 8px;
+}
+
+.contenido {
+    flex: 1;
+    padding: 24px;
+    max-width: 1180px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.pie {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 10px 24px;
+    border-top: 1px solid var(--borde);
+    color: var(--neutro);
+    font-size: 12px;
+}
+
+.pie__aviso {
+    color: var(--aviso);
+}
+
+h1 {
+    font-size: 22px;
+    margin: 0 0 16px;
+}
+
+h2 {
+    font-size: 17px;
+    margin: 24px 0 10px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+}
+
+th,
+td {
+    text-align: left;
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--borde);
+    font-size: 14px;
+}
+
+th {
+    background: #f2efe9;
+    font-weight: 600;
+}
+
+.boton {
+    border: 1px solid var(--verde);
+    background: var(--verde);
+    color: #fff;
+    border-radius: 4px;
+    padding: 7px 14px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.boton--chico {
+    padding: 4px 10px;
+    font-size: 12px;
+    background: transparent;
+}
+
+.boton--suave {
+    background: #fff;
+    color: var(--verde);
+}
+
+.boton[disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.campo {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 12px;
+}
+
+.campo label {
+    font-size: 13px;
+    color: var(--neutro);
+}
+
+.campo input,
+.campo select,
+.campo textarea {
+    border: 1px solid var(--borde);
+    border-radius: 4px;
+    padding: 8px;
+    font: inherit;
+    background: #fff;
+}
+
+.panel {
+    background: #fff;
+    border: 1px solid var(--borde);
+    border-radius: 6px;
+    padding: 16px;
+    margin-bottom: 20px;
+}
+
+.aviso {
+    border-left: 3px solid var(--aviso);
+    background: #fff7ed;
+    padding: 10px 12px;
+    margin-bottom: 16px;
+    font-size: 14px;
+}
+
+.error {
+    border-left: 3px solid var(--alerta);
+    background: #fef2f2;
+    padding: 10px 12px;
+    margin-bottom: 16px;
+    font-size: 14px;
+}
+
+.sin-permiso {
+    color: var(--neutro);
+    font-style: italic;
+}

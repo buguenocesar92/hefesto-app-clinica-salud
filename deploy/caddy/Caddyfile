@@ -1,0 +1,53 @@
+# =============================================================================
+# Caddy de ClinicaSalud
+# =============================================================================
+# Un solo dominio publico. Termina TLS y reparte:
+#   /api/*  -> la API de Laravel
+#   /       -> la interfaz de Nuxt
+#
+# Por que un dominio y no dos: la cookie de sesion tiene que viajar del
+# navegador a la interfaz y de la interfaz a la API en el mismo origen. Con dos
+# subdominios habria que hacer la cookie de dominio compartido, que es mas
+# fragil y mas dificil de auditar.
+#
+# NOTA: `header` de Caddy se llama `header` en el bloque de respuesta global.
+# =============================================================================
+
+{
+	email {$ACME_EMAIL:admin@hefesto.cl}
+}
+
+{$DOMINIO:clinica.ejemplo.cl} {
+	encode zstd gzip
+
+	# Cabeceras de endurecimiento. `Strict-Transport-Security` solo tiene
+	# sentido con TLS, asi que se agrega aca y no en el servidor de la API.
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "same-origin"
+		Permissions-Policy "geolocation=(), microphone=(), camera=()"
+		# La aplicacion no carga recursos de terceros: la politica lo refleja.
+		Content-Security-Policy "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+	}
+
+	# La API responde con `no-store` tambien; se repite aca para que ninguna
+	# capa intermedia (CDN, proxy del estudio) guarde una respuesta.
+	@api path /api/*
+
+	handle @api {
+		reverse_proxy api:8000
+	}
+
+	handle {
+		reverse_proxy web:3000
+	}
+
+	log {
+		output stdout
+		format json
+		# El registro de acceso de Caddy NO guarda cuerpos ni cookies: solo
+		# metodo, ruta, estado y tiempo.
+	}
+}

@@ -1,0 +1,41 @@
+# Dependencias
+/node_modules
+/vendor
+
+# Configuracion con secretos
+.env
+api/.env
+web/.env
+
+#_CACHE
+.phpunit.cache
+.phpunit.result.cache
+
+# Laravel
+api/storage/*.key
+api/storage/framework/cache/*
+api/storage/framework/sessions/*
+api/storage/framework/views/*
+api/storage/logs/*
+api/bootstrap/cache/*.php
+
+# Nuxt
+.nuxt
+.output
+.data
+.nitro
+.cache
+
+# Sistema
+.DS_Store
+Thumbs.db
+*.swp
+
+# Python (herramientas de verificacion)
+__pycache__/
+*.pyc
+
+# Editores
+.idea
+.vscode
+*.swp
